@@ -27,6 +27,7 @@ const DEFAULT_ACCOUNTS = [
     { name: 'HDFC', openingBalance: 118, minBalanceAlert: 0 },
     { name: 'Fi Money', openingBalance: 4794.14, minBalanceAlert: 0 },
     { name: 'Federal', openingBalance: 57.18, minBalanceAlert: 0 },
+    { name: 'Cash', openingBalance: 0, minBalanceAlert: 0 },
 ];
 
 const DEFAULT_CATEGORIES = [
