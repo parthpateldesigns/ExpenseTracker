@@ -21,7 +21,7 @@ export default function Dashboard() {
     const {
         accounts, transactions, accountBalances,
         monthlyAccountTotals, globalTotals, selectedMonth,
-        theme, toggleTheme,
+        theme, toggleTheme, handleSignOut, user,
     } = useApp();
 
     const [showAddAccount, setShowAddAccount] = useState(false);
@@ -42,26 +42,41 @@ export default function Dashboard() {
                             <div className="text-label" style={{ marginBottom: '4px' }}>Balance</div>
                             <h1 className="text-display">{formatCurrency(globalTotals.totalBalance)}</h1>
                         </div>
-                        <button
-                            className="theme-toggle"
-                            onClick={toggleTheme}
-                            id="theme-toggle-btn"
-                            aria-label="Toggle theme"
-                            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                        >
-                            <AnimatePresence mode="wait" initial={false}>
-                                <motion.span
-                                    key={theme}
-                                    initial={{ rotate: -30, opacity: 0, scale: 0.7 }}
-                                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                                    exit={{ rotate: 30, opacity: 0, scale: 0.7 }}
-                                    transition={{ duration: 0.2 }}
-                                    style={{ display: 'flex', alignItems: 'center' }}
-                                >
-                                    {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
-                                </motion.span>
-                            </AnimatePresence>
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                                className="theme-toggle"
+                                onClick={toggleTheme}
+                                id="theme-toggle-btn"
+                                aria-label="Toggle theme"
+                                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                            >
+                                <AnimatePresence mode="wait" initial={false}>
+                                    <motion.span
+                                        key={theme}
+                                        initial={{ rotate: -30, opacity: 0, scale: 0.7 }}
+                                        animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                                        exit={{ rotate: 30, opacity: 0, scale: 0.7 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
+                                    </motion.span>
+                                </AnimatePresence>
+                            </button>
+                            <button
+                                className="theme-toggle"
+                                onClick={handleSignOut}
+                                id="sign-out-btn"
+                                aria-label="Sign out"
+                                title={`Sign out (${user?.email})`}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                            </button>
+                        </div>
                     </motion.div>
 
                     {/* Global Stats */}
