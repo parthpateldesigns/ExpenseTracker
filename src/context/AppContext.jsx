@@ -23,10 +23,8 @@ async function hashPin(pin) {
 
 // ─── Default data seeded on first login ──────────────────────────────────────
 const DEFAULT_ACCOUNTS = [
-    { name: 'SBI', openingBalance: 3633.74, minBalanceAlert: 0 },
-    { name: 'HDFC', openingBalance: 118, minBalanceAlert: 0 },
-    { name: 'Fi Money', openingBalance: 4794.14, minBalanceAlert: 0 },
-    { name: 'Federal', openingBalance: 57.18, minBalanceAlert: 0 },
+    { name: 'HDFC', openingBalance: 0, minBalanceAlert: 0 },
+    { name: 'SBI', openingBalance: 0, minBalanceAlert: 0 },
     { name: 'Cash', openingBalance: 0, minBalanceAlert: 0 },
 ];
 
@@ -93,19 +91,11 @@ export function AppProvider({ children }) {
 
             const uid = firebaseUser.uid;
 
-            // Seed default accounts if this is a brand-new user
+            // Check if this is a brand-new user (no prefs yet)
             const prefsRef = metaDoc(uid);
             const prefsSnap = await getDoc(prefsRef);
             if (!prefsSnap.exists()) {
-                // First sign-in — seed accounts + prefs
-                const batch = writeBatch(db);
-                for (const acc of DEFAULT_ACCOUNTS) {
-                    const ref = doc(accountsCol(uid));
-                    batch.set(ref, { ...acc, createdAt: serverTimestamp() });
-                }
-                batch.set(prefsRef, { categories: DEFAULT_CATEGORIES });
-                await batch.commit();
-                // No PIN yet — new user
+                // Brand new user — No PIN yet — Show PIN setup screen
                 setHasPin(false);
                 setPinLocked(false);
             } else {
@@ -223,12 +213,34 @@ export function AppProvider({ children }) {
     const setupPin = useCallback(async (pin) => {
         if (!user) return;
         const hash = await hashPin(pin);
-        await setDoc(metaDoc(user.uid), { pinHash: hash }, { merge: true });
-        sessionStorage.setItem(`balance-unlocked-${user.uid}`, '1');
+        const uid = user.uid;
+
+        // Start a batch for atomicity
+        const batch = writeBatch(db);
+
+        // 1. Set the PIN hash and default categories in meta/prefs
+        batch.set(metaDoc(uid), { 
+            pinHash: hash,
+            categories: DEFAULT_CATEGORIES 
+        }, { merge: true });
+
+        // 2. Check if accounts exist. If not, seed default accounts.
+        // This is safe because setupPin is only called for new users in the current UI flow,
+        // and we check if the local accounts state is empty as a secondary safeguard.
+        if (accounts.length === 0) {
+            for (const acc of DEFAULT_ACCOUNTS) {
+                const ref = doc(accountsCol(uid));
+                batch.set(ref, { ...acc, createdAt: serverTimestamp() });
+            }
+        }
+
+        await batch.commit();
+
+        sessionStorage.setItem(`balance-unlocked-${uid}`, '1');
         setHasPin(true);
         setPinLocked(false);
         showToast('PIN set successfully');
-    }, [user, showToast]);
+    }, [user, accounts, showToast]);
 
     const unlockWithPin = useCallback(async (pin) => {
         if (!user) return false;
