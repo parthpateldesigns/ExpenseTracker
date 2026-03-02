@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { formatCurrency, filterTransactionsByMonth } from '../utils/helpers';
@@ -26,6 +26,23 @@ export default function Dashboard() {
 
     const [showAddAccount, setShowAddAccount] = useState(false);
     const [showAddTxn, setShowAddTxn] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const profileRef = useRef(null);
+
+    // Close profile dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setShowProfile(false);
+            }
+        };
+        if (showProfile) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showProfile]);
+
+    const userInitials = user?.displayName
+        ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        : user?.email?.[0]?.toUpperCase() || '?';
 
     const recentTransactions = useMemo(() => {
         const { month, year } = selectedMonth;
@@ -63,19 +80,116 @@ export default function Dashboard() {
                                     </motion.span>
                                 </AnimatePresence>
                             </button>
-                            <button
-                                className="theme-toggle"
-                                onClick={handleSignOut}
-                                id="sign-out-btn"
-                                aria-label="Sign out"
-                                title={`Sign out (${user?.email})`}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                    <polyline points="16 17 21 12 16 7" />
-                                    <line x1="21" y1="12" x2="9" y2="12" />
-                                </svg>
-                            </button>
+                            {/* User profile avatar */}
+                            <div ref={profileRef} style={{ position: 'relative' }}>
+                                <button
+                                    className="theme-toggle"
+                                    onClick={() => setShowProfile((p) => !p)}
+                                    id="user-profile-btn"
+                                    aria-label="User profile"
+                                    title={user?.displayName || user?.email}
+                                    style={{
+                                        width: 32, height: 32, borderRadius: '50%',
+                                        background: user?.photoURL ? 'none' : 'var(--accent)',
+                                        color: '#fff', fontWeight: 700, fontSize: '0.7rem',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        padding: 0, overflow: 'hidden',
+                                        border: '2px solid var(--border-active)',
+                                    }}
+                                >
+                                    {user?.photoURL ? (
+                                        <img
+                                            src={user.photoURL}
+                                            alt="Profile"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            referrerPolicy="no-referrer"
+                                        />
+                                    ) : userInitials}
+                                </button>
+                                <AnimatePresence>
+                                    {showProfile && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                                            transition={{ duration: 0.15 }}
+                                            style={{
+                                                position: 'absolute', top: '42px', right: 0, zIndex: 100,
+                                                background: 'var(--bg-elevated)',
+                                                border: '1px solid var(--border-default)',
+                                                borderRadius: 'var(--radius-md, 12px)',
+                                                padding: '16px',
+                                                minWidth: '220px',
+                                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                            }}
+                                        >
+                                            <div style={{
+                                                display: 'flex', alignItems: 'center', gap: '12px',
+                                                marginBottom: '14px', paddingBottom: '14px',
+                                                borderBottom: '1px solid var(--border-default)',
+                                            }}>
+                                                <div style={{
+                                                    width: 40, height: 40, borderRadius: '50%',
+                                                    background: user?.photoURL ? 'none' : 'var(--accent)',
+                                                    color: '#fff', fontWeight: 700, fontSize: '0.85rem',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    overflow: 'hidden', flexShrink: 0,
+                                                    border: '2px solid var(--border-active)',
+                                                }}>
+                                                    {user?.photoURL ? (
+                                                        <img
+                                                            src={user.photoURL}
+                                                            alt="Profile"
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                            referrerPolicy="no-referrer"
+                                                        />
+                                                    ) : userInitials}
+                                                </div>
+                                                <div style={{ overflow: 'hidden' }}>
+                                                    {user?.displayName && (
+                                                        <div style={{
+                                                            fontWeight: 600, fontSize: '0.875rem',
+                                                            color: 'var(--text-primary)',
+                                                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                                        }}>
+                                                            {user.displayName}
+                                                        </div>
+                                                    )}
+                                                    <div style={{
+                                                        fontSize: '0.75rem', color: 'var(--text-tertiary)',
+                                                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                                    }}>
+                                                        {user?.email}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => { setShowProfile(false); handleSignOut(); }}
+                                                id="profile-sign-out-btn"
+                                                style={{
+                                                    width: '100%', padding: '8px 12px',
+                                                    background: 'none', border: '1px solid var(--border-default)',
+                                                    borderRadius: 'var(--radius-sm, 8px)',
+                                                    color: 'var(--expense)', fontSize: '0.8125rem',
+                                                    fontWeight: 500, cursor: 'pointer',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    gap: '6px', fontFamily: 'inherit',
+                                                    transition: 'background 150ms ease, border-color 150ms ease',
+                                                }}
+                                                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--expense-muted)'; }}
+                                                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                                    <polyline points="16 17 21 12 16 7" />
+                                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                                </svg>
+                                                Sign out
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </motion.div>
 
