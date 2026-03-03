@@ -6,7 +6,6 @@ import { IconPlus, IconArrowUp, IconArrowDown, IconSun, IconMoon } from '../comp
 import TransactionItem from '../components/TransactionItem';
 import AddAccountModal from '../components/AddAccountModal';
 import AddTransactionModal from '../components/AddTransactionModal';
-import VoiceInput from '../components/VoiceInput';
 
 const stagger = {
     hidden: {},
@@ -389,7 +388,6 @@ export default function Dashboard() {
 
             <AddAccountModal isOpen={showAddAccount} onClose={() => setShowAddAccount(false)} />
             <AddTransactionModal isOpen={showAddTxn} onClose={() => setShowAddTxn(false)} />
-            <VoiceInput />
         </div>
     );
 }
