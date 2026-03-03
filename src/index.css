@@ -973,3 +973,137 @@ select.input option {
 .recharts-cartesian-grid-vertical line {
   stroke: var(--border-subtle);
 }
+
+/* ─── Voice Input ─────────────────────────────────────────────────────────── */
+.voice-btn-container {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.voice-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(99, 140, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.voice-btn:hover {
+  transform: scale(1.05);
+  background: var(--accent-hover);
+}
+
+.voice-btn.listening {
+  background: var(--expense);
+}
+
+.mic-pulse {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+}
+
+.voice-overlay-content {
+  background: var(--bg-card);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.pulse-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: mic-glow 2s infinite ease-in-out;
+}
+
+@keyframes mic-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 140, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 20px rgba(99, 140, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 140, 255, 0);
+  }
+}
+
+.transcript-preview {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  min-height: 1.5em;
+  font-style: italic;
+}
+
+.voice-confirm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.confirm-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.confirm-row .label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.confirm-row .value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.confirm-row .value.large {
+  font-size: 1.5rem;
+  color: var(--accent);
+}
