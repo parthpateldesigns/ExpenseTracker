@@ -91,6 +91,13 @@ export function AppProvider({ children }) {
 
             const uid = firebaseUser.uid;
 
+            // Save displayName & email to the user doc so it's visible in Firebase Console
+            await setDoc(doc(db, 'users', uid), {
+                displayName: firebaseUser.displayName || '',
+                email: firebaseUser.email || '',
+                lastLogin: serverTimestamp(),
+            }, { merge: true });
+
             // Check if this is a brand-new user (no prefs yet)
             const prefsRef = metaDoc(uid);
             const prefsSnap = await getDoc(prefsRef);
@@ -219,9 +226,9 @@ export function AppProvider({ children }) {
         const batch = writeBatch(db);
 
         // 1. Set the PIN hash and default categories in meta/prefs
-        batch.set(metaDoc(uid), { 
+        batch.set(metaDoc(uid), {
             pinHash: hash,
-            categories: DEFAULT_CATEGORIES 
+            categories: DEFAULT_CATEGORIES
         }, { merge: true });
 
         // 2. Check if accounts exist. If not, seed default accounts.

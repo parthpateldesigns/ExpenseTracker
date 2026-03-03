@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 
@@ -74,6 +74,19 @@ export default function PinScreen({ mode }) {
         set((p) => p.slice(0, -1));
         setError('');
     };
+
+    // ── Keyboard support ─────────────────────────────────────────────────────
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                handleDigit(e.key);
+            } else if (e.key === 'Backspace') {
+                handleBackspace();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    });
 
     // ── Labels ────────────────────────────────────────────────────────────────
     const title =

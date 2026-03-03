@@ -1,9 +1,10 @@
-import { IconHome, IconCalendar, IconWallet } from './Icons';
+import { IconHome, IconCalendar, IconWallet, IconChart } from './Icons';
 import { useApp } from '../context/AppContext';
 
 const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: IconHome },
     { id: 'monthly', label: 'Monthly', icon: IconCalendar },
+    { id: 'charts', label: 'Charts', icon: IconChart },
     { id: 'accounts', label: 'Accounts', icon: IconWallet },
 ];
 
@@ -26,3 +27,4 @@ export default function BottomNav() {
         </nav>
     );
 }
+

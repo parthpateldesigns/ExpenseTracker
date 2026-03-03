@@ -4,6 +4,7 @@ import BottomNav from './components/BottomNav';
 import Dashboard from './pages/Dashboard';
 import Monthly from './pages/Monthly';
 import Accounts from './pages/Accounts';
+import Charts from './pages/Charts';
 import LoginScreen from './components/LoginScreen';
 import PinScreen from './components/PinScreen';
 import './index.css';
@@ -101,6 +102,7 @@ function AppContent() {
         >
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'monthly' && <Monthly />}
+          {activeTab === 'charts' && <Charts />}
           {activeTab === 'accounts' && <Accounts />}
         </motion.div>
       </AnimatePresence>

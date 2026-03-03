@@ -135,10 +135,32 @@ export default function LoginScreen() {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                style={{ marginTop: '24px', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', maxWidth: 300 }}
+                transition={{ delay: 0.35 }}
+                style={{
+                    marginTop: '32px',
+                    maxWidth: 340,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '14px',
+                }}
             >
-                Your data is private and only accessible to you.
+                <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    How Balance works
+                </div>
+                {[
+                    { icon: '✏️', text: 'Manually log income & expenses — no bank login needed' },
+                    { icon: '🔒', text: 'PIN-protected & your data stays private to you' },
+                    { icon: '☁️', text: 'Syncs automatically across all your devices' },
+                    { icon: '📊', text: 'Charts, filters, and CSV/PDF export built in' },
+                ].map((item, i) => (
+                    <div key={i} style={{
+                        display: 'flex', alignItems: 'flex-start', gap: '10px',
+                        fontSize: '0.8125rem', color: 'var(--text-tertiary)', lineHeight: 1.5,
+                    }}>
+                        <span style={{ flexShrink: 0, fontSize: '0.9rem' }}>{item.icon}</span>
+                        <span>{item.text}</span>
+                    </div>
+                ))}
             </motion.div>
 
             <style>{`
